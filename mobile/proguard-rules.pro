@@ -29,7 +29,6 @@
   **[] $VALUES;
   public *;
 }
--keepresourcexmlelements manifest/application/meta-data@value=GlideModule
 
 
 # Don't break support libraries
