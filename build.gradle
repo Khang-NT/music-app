@@ -1,0 +1,61 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+project.ext {
+    supportVersion = "25.1.0"
+    buildToolVersion = "25.0.2"
+    compileSdkVersion = 25
+    targetSdkVersion = 25
+}
+
+// get auto incremental build number
+project.ext.buildNumber = {
+    Properties versionProps = new Properties()
+    File versionPropsFile = file('version.properties')
+    if(versionPropsFile.exists())
+        versionProps.load(new FileInputStream(versionPropsFile))
+    int code = (versionProps['BUILD_NUMBER'] ?: "0").toInteger()
+
+    // don't increase build number on CI
+    if (!System.getenv("CI")) {
+        code += 1
+    }
+
+    versionProps['BUILD_NUMBER'] = code.toString()
+    versionProps.store(versionPropsFile.newWriter(), null)
+
+    return code
+}
+
+// disable PreDex on CI
+project.ext.preDexLibs = !project.hasProperty('disablePreDex')
+subprojects {
+    project.plugins.whenPluginAdded { plugin ->
+        if ("com.android.build.gradle.AppPlugin".equals(plugin.class.name)) {
+            project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
+        } else if ("com.android.build.gradle.LibraryPlugin".equals(plugin.class.name)) {
+            project.android.dexOptions.preDexLibraries = rootProject.ext.preDexLibs
+        }
+    }
+}
