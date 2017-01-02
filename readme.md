@@ -1,4 +1,3 @@
 YMusic App
 --------------
-[![CircleCI](https://circleci.com/gh/Khang-NT/music-app/tree/master.svg?style=shield)](https://circleci.com/gh/Khang-NT/music-app/tree/master)[![codecov](https://codecov.io/gh/Khang-NT/music-app/branch/master/graph/badge.svg)](https://codecov.io/gh/Khang-NT/music-app)
-
+[![Release](https://img.shields.io/github/release/khang-nt/music-app.svg)](https://github.com/Khang-NT/music-app/releases) [![CircleCI](https://circleci.com/gh/Khang-NT/music-app/tree/master.svg?style=shield)](https://circleci.com/gh/Khang-NT/music-app/tree/master)
