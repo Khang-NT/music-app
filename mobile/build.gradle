@@ -15,6 +15,10 @@ android {
         versionCode rootProject.ext.buildNumber()
         versionName "0.0.${versionCode}"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+
+        // https://github.com/grandcentrix/tray#set-the-authority
+        resValue "string", "tray__authority", "${applicationId}.tray"
     }
 
     buildTypes {
@@ -61,10 +65,13 @@ dependencies {
     compile 'com.trello.rxlifecycle2:rxlifecycle-components:2.0.1'
     compile 'com.tbruyelle.rxpermissions2:rxpermissions:0.9.1@aar'
 
-    // Networking Retrofit2
+    // Networking - Retrofit2
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.jakewharton.retrofit:retrofit2-rxjava2-adapter:1.0.0'
+
+    // Process safe preferences - Tray
+    compile 'net.grandcentrix.tray:tray:0.11.0'
 
     // Test compile
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
