@@ -29,7 +29,7 @@ android {
             storePassword key_store_password
         }
         debug {
-            keyAlias "android"
+            keyAlias "androiddebugkey"
             keyPassword "android"
             storeFile file('debug.keystore')
             storePassword "android"
