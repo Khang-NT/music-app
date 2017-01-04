@@ -1,0 +1,34 @@
+sudo: true
+language: android
+cache:
+    directories:
+        - $HOME/.m2
+        - $HOME/.gradle
+jdk:
+    - oraclejdk8
+android:
+    components:
+        - tools
+        - build-tools-25.0.2
+        - android-25
+        - extra-android-support
+        - extra-google-m2repository
+        - extra-android-m2repository
+
+before_install:
+    - echo "org.gradle.daemon=true" > gradle.properties
+    - echo "org.gradle.jvmargs=-Xmx3000M" >> gradle.properties
+    - echo "default_web_client_id=$WEB_CLIENT_ID" >> gradle.properties
+    - echo "firebase_database_url=$FIREBASE_URL" >> gradle.properties
+    - echo "gcm_defaultSenderId=$SENDER_ID" >> gradle.properties
+    - echo "google_api_key=$GOOGLE_API_KEY" >> gradle.properties
+    - echo "google_app_id=$GOOGLE_APP_ID" >> gradle.properties
+    - echo "google_crash_reporting_api_key=$GOOGLE_API_KEY" >> gradle.properties
+    - echo "google_storage_bucket=$GOOGLE_STORAGE" >> gradle.properties
+    - echo "key_store_password=$KEY_PASSWORD" >> gradle.properties
+    - echo "google_app_id_debug=$GOOGLE_APP_ID_DEBUG" >> gradle.properties
+
+script: ./gradlew clean assemble test -PdisablePreDex
+after_success:
+    - bash deploy_build_artifact.sh
+
