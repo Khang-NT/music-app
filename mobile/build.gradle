@@ -21,15 +21,33 @@ android {
         resValue "string", "tray__authority", "${applicationId}.tray"
     }
 
+    signingConfigs {
+        release {
+            keyAlias 'YMusic'
+            keyPassword key_store_password
+            storeFile file('YMusicKeyStore.jks')
+            storePassword key_store_password
+        }
+        debug {
+            keyAlias "android"
+            keyPassword "android"
+            storeFile file('debug.keystore')
+            storePassword "android"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             zipAlignEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix '.debug'
+            signingConfig signingConfigs.debug
         }
     }
 

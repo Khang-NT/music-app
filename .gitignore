@@ -10,3 +10,4 @@
 .externalNativeBuild
 tv/
 wear/
+gradle.properties
