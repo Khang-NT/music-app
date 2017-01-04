@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The most prominent text color.  -->
+    <attr name="textColorPrimary" format="reference|color" />
+    <!-- Secondary text color. -->
+    <attr name="textColorSecondary" format="reference|color" />
+</resources>

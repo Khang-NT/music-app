@@ -19,6 +19,15 @@ android {
 
         // https://github.com/grandcentrix/tray#set-the-authority
         resValue "string", "tray__authority", "${applicationId}.tray"
+
+        buildConfigField 'String', 'SERVICE_SERVER', '"http://138.197.14.131/api/v1/"'
+
+        resValue "string", "default_web_client_id", default_web_client_id
+        resValue "string", "firebase_database_url", firebase_database_url
+        resValue "string", "gcm_defaultSenderId", gcm_defaultSenderId
+        resValue "string", "google_api_key", google_api_key
+        resValue "string", "google_crash_reporting_api_key", google_crash_reporting_api_key
+        resValue "string", "google_storage_bucket", google_storage_bucket
     }
 
     signingConfigs {
@@ -43,11 +52,15 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
+
+            resValue "string", "google_app_id", google_app_id
         }
         debug {
             applicationIdSuffix ".debug"
             versionNameSuffix '.debug'
             signingConfig signingConfigs.debug
+
+            resValue "string", "google_app_id", google_app_id_debug
         }
     }
 
@@ -90,6 +103,16 @@ dependencies {
 
     // Process safe preferences - Tray
     compile 'net.grandcentrix.tray:tray:0.11.0'
+
+    // Smooth progress bar
+    compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
+
+    // Firebase
+    compile 'com.google.firebase:firebase-core:9.8.0'
+    compile 'com.google.firebase:firebase-database:9.8.0'
+    compile 'com.google.firebase:firebase-auth:9.8.0'
+    compile 'com.google.firebase:firebase-crash:9.8.0'
+    compile 'com.google.android.gms:play-services-auth:9.8.0'
 
     // Test compile
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {

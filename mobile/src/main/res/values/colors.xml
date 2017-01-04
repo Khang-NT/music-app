@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#657D8A</color>
+    <color name="colorPrimaryDark">#495A63</color>
+    <color name="colorAccent">#469689</color>
+    <color name="divider">#BDBDBD</color>
+
+    <color name="background">#F9F9F9</color>
+    <color name="text_color_primary">#212121</color>
+    <color name="text_color_secondary">#757575</color>
+
+    <!--Login screen-->
+    <color name="colorPrimary2">#212121</color>
+    <color name="colorPrimaryDark2">#171717</color>
+
+    <color name="gplus_color_1">#3e802f</color>
+    <color name="gplus_color_2">#f4b400</color>
+    <color name="gplus_color_3">#427fed</color>
+    <color name="gplus_color_4">#b23424</color>
+
+    <integer-array name="gplus_colors">
+        <item>@color/gplus_color_1</item>
+        <item>@color/gplus_color_2</item>
+        <item>@color/gplus_color_3</item>
+        <item>@color/gplus_color_4</item>
+    </integer-array>
 </resources>

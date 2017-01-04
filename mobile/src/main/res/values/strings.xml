@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">YMusic</string>
+    <string name="login_screen_text1">Login to keep sync with your YouTube account.</string>
 </resources>
