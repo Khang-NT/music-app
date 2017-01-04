@@ -30,5 +30,7 @@ before_install:
 
 script: ./gradlew clean assemble test -PdisablePreDex
 after_success:
-    - bash deploy_build_artifact.sh
+    - mkdir -p $HOME/$TRAVIS_BUILD_NUMBER;
+    - cp -a $TRAVIS_BUILD_DIR/mobile/build/outputs/. $HOME/$TRAVIS_BUILD_NUMBER
+    - export UPLOAD_FOLDER=$HOME/$TRAVIS_BUILD_NUMBER && bash upload_build_artifact.sh
 
