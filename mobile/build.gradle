@@ -16,7 +16,7 @@ android {
         versionName "0.0.${versionCode}"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        buildConfigField 'String', 'SERVICE_SERVER', '"http://138.197.14.131/api/v1/"'
+        buildConfigField 'String', 'SERVICE_SERVER', '"http://138.197.14.131/"'
 
         resValue "string", "default_web_client_id", default_web_client_id
         resValue "string", "firebase_database_url", firebase_database_url
@@ -50,7 +50,7 @@ android {
             signingConfig signingConfigs.release
 
             // https://github.com/grandcentrix/tray#set-the-authority
-            resValue "string", "tray__authority", "${applicationId}.tray"
+            resValue "string", "tray__authority", "com.github.khangnt.ymusic.tray"
 
             resValue "string", "google_app_id", google_app_id
         }
@@ -60,7 +60,7 @@ android {
             signingConfig signingConfigs.debug
 
             // https://github.com/grandcentrix/tray#set-the-authority
-            resValue "string", "tray__authority", "${applicationId}.tray_debug"
+            resValue "string", "tray__authority", "com.github.khangnt.ymusic.tray.debug"
 
             resValue "string", "google_app_id", google_app_id_debug
         }
