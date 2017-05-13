@@ -44,7 +44,7 @@
     }(document, 'script', 'facebook-jssdk'));</script>
 	<header class="cd-header">
 		<div id="cd-logo"><img src="img/ymusic_logo_text.png" alt="Logo"></div>
-		<div id="cd-action"><a href="/download" class="btn">Download</a></div>
+		<div id="cd-action"><a href="/download" class="btn download">Download</a></div>
 	</header>
 
 	<main class="cd-main-content">
@@ -59,7 +59,7 @@
                 data-show-faces="false" data-colorscheme="dark"></div>
 
             <div class="cd-triggers">
-				<a href="/download" class="btn">Download</a>
+				<a href="/download" class="btn download">Download</a>
 				<a href="#cd-product-tour" class="btn salmon" data-type="cd-tour">Start</a>
 			</div>
 		</div> <!-- cd-product-intro -->
@@ -145,5 +145,25 @@
 	</main>
 <script src="js/jquery-2.1.1.js"></script>
 <script src="js/main.js"></script> <!-- Resource jQuery -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-78093029-4', 'auto');
+  ga('send', 'pageview');
+</script>
+
+<script>
+$(document).ready(function() {
+    $(".download").each(function(i) {
+        $(this).click(function() {
+            fbq('trackCustom', 'Download');
+            ga('send', 'download');
+        });
+    })
+});
+</script>
 </body>
 </html>
