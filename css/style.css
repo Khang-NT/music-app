@@ -644,3 +644,9 @@ html, body {
   background-color: #f58780;
   display: none;
 }
+
+.fb-like span {
+    width: 200px !important;
+    margin: 0 auto !important;
+    margin-bottom: 22px !important;
+}
