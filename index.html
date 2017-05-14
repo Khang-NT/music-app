@@ -46,7 +46,7 @@
 		<div id="cd-logo"><img src="img/ymusic_logo_text.png" alt="Logo"></div>
 		<div id="cd-action"><a href="/download" class="btn download">Download</a></div>
 	</header>
-
+    <div id="snackbar">Download will start shortly..</div>
 	<main class="cd-main-content">
 		<div class="cd-product-intro">
 			<h1>YMusic Android</h1>
@@ -142,7 +142,9 @@
 		</div> <!-- cd-slider-nav -->
 
 		<div class="cd-loader"></div> <!-- top loading bar -->
+
 	</main>
+
 <script src="js/jquery-2.1.1.js"></script>
 <script src="js/main.js"></script> <!-- Resource jQuery -->
 
@@ -161,6 +163,10 @@ $(document).ready(function() {
         $(this).click(function() {
             fbq('trackCustom', 'Download');
             ga('send', 'download');
+
+            var x = document.getElementById("snackbar")
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
         });
     })
 });
