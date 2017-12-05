@@ -176,7 +176,6 @@
         }
 
         trackInPageInvalidate &= audioPlayElements.length === 0;
-        console.log(trackInPageInvalidate);
         setTimeout(overrideAudioPlay, trackInPageInvalidate ? 50 : 500);
     }
     
