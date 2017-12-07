@@ -43,11 +43,31 @@
     var regexTrackData = /\/track\/\d+$/g;
     var regexChart = /\/tracks\/\w+chart\w+$/g;
     var regexRecommendation = /\/tracks\/recommendations_\d+$/g;
+    var regexArtistCarousel = /\/artistfollow\.json$/g;
+    var regexShazamAccount = /\/tag\/([A-Z0-9a-z]+-?)+$/g;
+
+    function parseArtistCarousel(data) {
+        for (let index = 0; index < data.length; index++) {
+            const trackData = data[index].track;
+            if (trackData) parseTrack(trackData);
+        }
+    }
 
     function parseChart(data) {
         for (let index = 0; index < data.chart.length; index++) {
             const trackData = data.chart[index];
             parseTrack(trackData);
+        }
+    }
+
+    function parseShazamAccountData(data) {
+        let tags = data.tags;
+        if (tags) {
+            for (let i = 0; i < tags.length; i++) {
+                const tag = tags[i];
+                let trackData = tag.track;
+                if (trackData) parseTrack(trackData);
+            }
         }
     }
 
@@ -84,6 +104,10 @@
                         parseChart(JSON.parse(this.responseText));
                     } else if (regexTrackData.test(uri.pathname)) {
                         parseTrack(JSON.parse(this.responseText));
+                    } else if (regexArtistCarousel.test(uri.pathname)) {
+                        parseArtistCarousel(JSON.parse(this.responseText));
+                    } else if (regexShazamAccount.test(uri.pathname)) {
+                        parseShazamAccountData(JSON.parse(this.responseText));
                     }
                 }
             };
