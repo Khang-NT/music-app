@@ -1,4 +1,14 @@
-(function() {
+(function () {
+
+    (function (history) {
+        var pushState = history.pushState;
+        history.pushState = function (state, title, url) {
+            console.log(url);
+            window.location.href = url;
+            throw "Stop push state";
+        };
+    })(window.history);
+
     function hideElementByClassName(className) {
         var elements = document.getElementsByClassName(className);
         for (let i = 0; i < elements.length; i++) {
@@ -19,7 +29,7 @@
         setTimeout(checkAndHideElement, 1000);
     }
     checkAndHideElement();
-    
+
     function parseUri(href) {
         var l = document.createElement("a");
         l.href = href;
@@ -33,14 +43,14 @@
     var regexTrackData = /\/track\/\d+$/g;
     var regexChart = /\/tracks\/\w+chart\w+$/g;
     var regexRecommendation = /\/tracks\/recommendations_\d+$/g;
-    
+
     function parseChart(data) {
         for (let index = 0; index < data.chart.length; index++) {
             const trackData = data.chart[index];
             parseTrack(trackData);
         }
     }
-    
+
     function parseTrack(data) {
         if (data.type != "MUSIC") return;
         let track = {
@@ -51,26 +61,26 @@
         };
         if (!trackIdSet.has(track.id)) {
             trackIdSet.add(track.id);
-            trackInPage.push(track);  
+            trackInPage.push(track);
             if (!trackInPageInvalidate) {
                 trackInPageInvalidate = true;
                 console.log("Mark track in page invalidate");
             }
         }
     }
-    
-    (function(send) {
-        XMLHttpRequest.prototype.send = function(data) {
+
+    (function (send) {
+        XMLHttpRequest.prototype.send = function (data) {
             let originCallback = this.onreadystatechange;
-            this.onreadystatechange = function() {
+            this.onreadystatechange = function () {
                 if (originCallback) {
                     originCallback();
                 }
-                if(this.readyState == 4 && this.status == 200) {
+                if (this.readyState == 4 && this.status == 200) {
                     let uri = parseUri(this.responseURL);
-                    if (regexAristTopTract.test(uri.pathname) || 
-                            regexChart.test(uri.pathname) || 
-                            regexRecommendation.test(uri.pathname)) {
+                    if (regexAristTopTract.test(uri.pathname) ||
+                        regexChart.test(uri.pathname) ||
+                        regexRecommendation.test(uri.pathname)) {
                         parseChart(JSON.parse(this.responseText));
                     } else if (regexTrackData.test(uri.pathname)) {
                         parseTrack(JSON.parse(this.responseText));
@@ -80,7 +90,7 @@
             send.call(this, data);
         };
     })(XMLHttpRequest.prototype.send);
-    
+
     // override play event
     function onPlayShazam(trackId = undefined) {
         let index = 0;
@@ -105,25 +115,25 @@
             console.log("doPlayYouTube:" + videoId);
         }
     }
-    
-    function replaceClass(e,className, newClass) {
+
+    function replaceClass(e, className, newClass) {
         var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
         e.className = e.className.replace(reg, ' ' + newClass + ' ');
     }
-    
+
     function hasClass(e, className) {
         var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
         return reg.test(e.className);
     }
-    
+
     function makeShazamEventClick(trackId) {
-        return function(e) {
+        return function (e) {
             onPlayShazam(trackId);
         };
     }
 
     function makeYouTubeEventClick(dataHref) {
-        return function(e) {
+        return function (e) {
             onPlayYoutubeVideo(dataHref);
         };
     }
@@ -178,6 +188,6 @@
         trackInPageInvalidate &= audioPlayElements.length === 0;
         setTimeout(overrideAudioPlay, trackInPageInvalidate ? 50 : 500);
     }
-    
+
     overrideAudioPlay();
 })();
