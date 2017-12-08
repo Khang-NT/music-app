@@ -79,6 +79,9 @@
             subtitle: data.heading.subtitle,
             thumbnail: data.images.default
         };
+        if (!track.thumbnail) {
+            track.thumbnail = 'https://images.shazam.com/coverart/t' + track.id + '_s400.jpg';
+        }
         if (!trackIdSet.has(track.id)) {
             trackIdSet.add(track.id);
             trackInPage.push(track);
