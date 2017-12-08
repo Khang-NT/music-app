@@ -178,7 +178,11 @@
         let audioPlayElements = document.getElementsByClassName("audio-play");
         for (let i = 0; i < audioPlayElements.length; i++) {
             const audioPlayElement = audioPlayElements[i];
-            const trackId = audioPlayElement.getAttribute('data-track-id');
+            let trackId = audioPlayElement.getAttribute('data-track-id');
+            if (!trackId) {
+                // try find in parent node
+                trackId = audioPlayElement.parentNode.getAttribute('data-track-id');
+            }
             if (!hasClass(audioPlayElement, "audio-play-overrided")) {
                 replaceClass(audioPlayElement, "audio-play", "audio-play-overrided");
                 audioPlayElement.addEventListener("click", makeShazamEventClick(trackId));
