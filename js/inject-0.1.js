@@ -1,13 +1,9 @@
 (function () {
-
-    (function (history) {
-        var pushState = history.pushState;
-        history.pushState = function (state, title, url) {
-            console.log(url);
-            window.location.href = url;
-            throw "Stop push state";
-        };
-    })(window.history);
+    function parseUri(href) {
+        var l = document.createElement("a");
+        l.href = href;
+        return l;
+    }
 
     function hideElementByClassName(className) {
         var elements = document.getElementsByClassName(className);
@@ -15,6 +11,10 @@
             elements[i].style.display = "none";
         }
     }
+
+    const shouldShowFacebookPage = Math.random() > 0.8; // 20% 
+    console.log('Show YMusic page: ' + shouldShowFacebookPage);
+
     function checkAndHideElement() {
         if (location.hostname.endsWith("shazam.com")) {
             if (location.pathname == "/") {
@@ -23,28 +23,32 @@
                 hideElementByClassName("get-verified");
                 hideElementByClassName("get-verified-btn");
             } else {
-                hideElementByClassName("shz-frame-money");
+                if (shouldShowFacebookPage) {
+                    var elements = document.getElementsByClassName("shz-frame-money");
+                    for (let i = 0; i < elements.length; i++) {
+                        const fbLikeContainer = elements[i];
+                        if (fbLikeContainer.className.indexOf('added-fb-like') < 0) {
+                            fbLikeContainer.className += ' added-fb-like';
+                            fbLikeContainer.style.textAlign = 'center';
+                            fbLikeContainer.innerHTML = `
+                            <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fymusic.android%2F&tabs&width=340&height=214&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=1526211714125837" width="340" height="214" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+                            `;
+                        }
+                    }
+                } else {
+                    hideElementByClassName('shz-frame-money');
+                }
             }
         }
         setTimeout(checkAndHideElement, 1000);
     }
+
     checkAndHideElement();
 
-    function parseUri(href) {
-        var l = document.createElement("a");
-        l.href = href;
-        return l;
-    }
     console.log("script ===============");
     var trackIdSet = new Set();
     var trackInPage = [];
     var trackInPageInvalidate = true;
-    var regexAristTopTract = /\/artisttoptracks_\d+$/g;
-    var regexTrackData = /\/track\/\d+$/g;
-    var regexChart = /\/tracks\/\w+chart\w+$/g;
-    var regexRecommendation = /\/tracks\/recommendations_\d+$/g;
-    var regexArtistCarousel = /\/artistfollow\.json$/g;
-    var regexShazamAccount = /\/tag\/([A-Z0-9a-z]+-?)+$/g;
 
     function parseArtistCarousel(data) {
         for (let index = 0; index < data.length; index++) {
@@ -85,6 +89,7 @@
         if (!trackIdSet.has(track.id)) {
             trackIdSet.add(track.id);
             trackInPage.push(track);
+            window.sessionStorage.setItem('track:' + track.id, JSON.stringify(track));
             if (!trackInPageInvalidate) {
                 trackInPageInvalidate = true;
                 console.log("Mark track in page invalidate");
@@ -100,6 +105,13 @@
                     originCallback();
                 }
                 if (this.readyState == 4 && this.status == 200) {
+                    const regexAristTopTract = /\/artisttoptracks_\d+$/g;
+                    const regexTrackData = /\/track\/\d+$/g;
+                    const regexChart = /\/tracks\/\w+chart\w+$/g;
+                    const regexRecommendation = /\/tracks\/recommendations_\d+$/g;
+                    const regexArtistCarousel = /\/artistfollow\.json$/g;
+                    const regexShazamAccount = /\/tag\/([A-Z0-9a-z]+-?)+$/g;
+
                     let uri = parseUri(this.responseURL);
                     if (regexAristTopTract.test(uri.pathname) ||
                         regexChart.test(uri.pathname) ||
@@ -107,6 +119,7 @@
                         parseChart(JSON.parse(this.responseText));
                     } else if (regexTrackData.test(uri.pathname)) {
                         parseTrack(JSON.parse(this.responseText));
+                        console.log(this.responseText);
                     } else if (regexArtistCarousel.test(uri.pathname)) {
                         parseArtistCarousel(JSON.parse(this.responseText));
                     } else if (regexShazamAccount.test(uri.pathname)) {
@@ -118,12 +131,20 @@
         };
     })(XMLHttpRequest.prototype.send);
 
-    // override play event
     function onPlayShazam(trackId = undefined) {
         let index = 0;
         if (trackId) {
             index = trackInPage.findIndex(track => track.id == trackId);
         }
+        if (index < 0) {
+            let trackInStorage = window.sessionStorage.getItem('track:' + trackId);
+            if (trackInStorage) {
+                trackInPage.unshift(JSON.parse(trackInStorage));
+                trackIdSet.add(trackId);
+                index = 0;
+            }
+        }
+        console.log('track: ' + trackId + ' index = ' + index);
         if (index < 0 || trackInPage.length === 0) {
             return;
         }
@@ -134,13 +155,8 @@
         console.log("doPlayShazam:" + JSON.stringify(eventPayload));
     }
 
-    function onPlayYoutubeVideo(dataHref) {
-        const regex = /\/ux\/youtube\/([a-zA-Z0-9-_]{11})/g;
-        let m = regex.exec(dataHref);
-        if (m) {
-            let videoId = m[1];
-            console.log("doPlayYouTube:" + videoId);
-        }
+    function onPlayYoutubeVideo(videoId) {
+        console.log("doPlayYouTube:" + videoId);
     }
 
     function replaceClass(e, className, newClass) {
@@ -153,16 +169,36 @@
         return reg.test(e.className);
     }
 
-    function makeShazamEventClick(trackId) {
+    function makeShazamEventClick(trackId, stopPropagation) {
         return function (e) {
             onPlayShazam(trackId);
+            if (stopPropagation) {
+                e.stopPropagation();
+            }
         };
     }
 
-    function makeYouTubeEventClick(dataHref) {
+    function makeYouTubeEventClick(videoId, stopPropagation) {
         return function (e) {
-            onPlayYoutubeVideo(dataHref);
+            onPlayYoutubeVideo(videoId);
+            if (stopPropagation) {
+                e.stopPropagation();
+            }
         };
+    }
+
+    function findYouTubeVideoId(data) {
+        let regex = /\/ux\/youtube\/([a-zA-Z0-9-_]{11})/g;
+        let m = regex.exec(data);
+        if (m) return m[1];
+
+        regex = /(\?|&)v=([a-zA-Z0-9-_]{11})(&|$)/g;
+        m = regex.exec(data);
+        if (m) return m[2];
+
+        regex = /youtu\.be\/([a-zA-Z0-9-_]{11})/g;
+        m = regex.exec(data);
+        if (m) return m[1];
     }
 
     function findElementByAttr(tag, attribute, attributeValue) {
@@ -178,42 +214,54 @@
     }
 
     function overrideAudioPlay() {
-        let audioPlayElements = document.getElementsByClassName("audio-play");
+        const audioPlayElements = document.getElementsByClassName("audio-play");
         for (let i = 0; i < audioPlayElements.length; i++) {
-            const audioPlayElement = audioPlayElements[i];
+            let audioPlayElement = audioPlayElements[i];
             let trackId = audioPlayElement.getAttribute('data-track-id');
             if (!trackId) {
                 // try find in parent node
                 trackId = audioPlayElement.parentNode.getAttribute('data-track-id');
+                if (!trackId) continue;
             }
-            if (!hasClass(audioPlayElement, "audio-play-overrided")) {
-                replaceClass(audioPlayElement, "audio-play", "audio-play-overrided");
-                audioPlayElement.addEventListener("click", makeShazamEventClick(trackId));
-            }
+            replaceClass(audioPlayElement, "audio-play", "audio-play-overrided");
             if (audioPlayElement.tagName.toUpperCase() == "A") {
-                audioPlayElement.href = "#";
+                audioPlayElement.href = '#play_shazam_' + trackId;
+            } else {
+                audioPlayElement.addEventListener('click', makeShazamEventClick(trackId, true), true);
             }
         }
+
         let playElements = findElementByAttr("a", "data-shz-cmd", "play");
         for (let i = 0; i < playElements.length; i++) {
             const playElement = playElements[i];
             playElement.attributes.removeNamedItem("data-shz-cmd");
-            if (!hasClass(playElement, "set-onclick")) {
+            if (playElement.tagName.toUpperCase() == "A") {
+                playElement.href = "#play_shazam_0";
+            } else if (!hasClass(playElement, "set-onclick")) {
                 playElement.className += " set-onclick";
-                playElement.addEventListener('pointerdown', makeShazamEventClick(null));
+                playElement.addEventListener('click', makeShazamEventClick(null, true), true);
             }
         }
-        let popupElements = document.getElementsByClassName("popup-btn");
+
+        const popupElements = document.getElementsByClassName("popup-btn");
         for (let i = 0; i < popupElements.length; i++) {
             const popupElement = popupElements[i];
             if (!popupElement.hasAttribute("data-href")) {
                 continue;
             }
+            const dataHref = popupElement.getAttribute("data-href");
+            const videoId = findYouTubeVideoId(dataHref);
+            if (!videoId) continue;
+
             replaceClass(popupElement, "popup-btn", '');
             replaceClass(popupElement, "popup-takeover", '');
-            const dataHref = popupElement.getAttribute("data-href");
             popupElement.attributes.removeNamedItem("data-href");
-            popupElement.addEventListener("pointerdown", makeYouTubeEventClick(dataHref));
+
+            if (popupElement.tagName.toUpperCase() == "A") {
+                popupElement.href = "#play_youtube_" + videoId;
+            } else {
+                popupElement.addEventListener("click", makeYouTubeEventClick(videoId, true), true);
+            }
         }
 
         trackInPageInvalidate &= audioPlayElements.length === 0;
@@ -221,4 +269,28 @@
     }
 
     overrideAudioPlay();
+
+    (function (history) {
+        var pushState = history.pushState;
+        history.pushState = function (state, title, url) {
+            let uri = parseUri(url);
+            if (uri.hash.startsWith('#play_shazam_')) {
+                let trackId = uri.hash.substring(13);
+                if (trackId == "0") {
+                    trackId = null;
+                }
+                console.log("#play_shazam - track ID: " + trackId);
+                onPlayShazam(trackId);
+                return;
+            } else if (uri.hash.startsWith('#play_youtube_')) {
+                let videoId = uri.hash.substring(14);
+                console.log("#play_youtube - video ID: " + videoId);
+                onPlayYoutubeVideo(videoId);
+                return;
+            }
+            console.log(url);
+            window.location.href = url;
+            pushState(state, title, url);
+        };
+    })(window.history);
 })();
