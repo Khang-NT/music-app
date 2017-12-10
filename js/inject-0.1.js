@@ -39,6 +39,14 @@
                     hideElementByClassName('shz-frame-money');
                 }
             }
+            // hide player footer
+            const footers = document.getElementsByTagName('footer');
+            for (let i = 0; i < footers.length; i++) {
+                const footer = footers[i];
+                if (footer.className.indexOf('footerstatic') >= 0) {
+                    footer.style.display = 'none';
+                }
+            }
         }
         setTimeout(checkAndHideElement, 1000);
     }
