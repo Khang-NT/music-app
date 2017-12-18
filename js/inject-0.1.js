@@ -12,7 +12,7 @@
         }
     }
 
-    const shouldShowFacebookPage = Math.random() > 0.8; // 20% 
+    const shouldShowFacebookPage = Math.random() > 0.7; // 30% 
     console.log('Show YMusic page: ' + shouldShowFacebookPage);
 
     function checkAndHideElement() {
