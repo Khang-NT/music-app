@@ -17,7 +17,7 @@
 
     function checkAndHideElement() {
         if (location.hostname.endsWith("shazam.com")) {
-            if (location.pathname == "/") {
+            if (location.pathname == "/" || location.pathname.length == 3) {
                 hideElementByClassName("getshazam");
                 hideElementByClassName("shazamoffers");
                 hideElementByClassName("get-verified");
