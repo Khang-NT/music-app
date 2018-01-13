@@ -7,16 +7,17 @@
 
     function hideElementByClassName(className) {
         var elements = document.getElementsByClassName(className);
-        for (let i = 0; i < elements.length; i++) {
+        for (var i = 0; i < elements.length; i++) {
             elements[i].style.display = "none";
         }
     }
 
-    const shouldShowFacebookPage = Math.random() > 0.7; // 30% 
+    var shouldShowFacebookPage = Math.random() > 0.7; // 30% 
     console.log('Show YMusic page: ' + shouldShowFacebookPage);
 
     function checkAndHideElement() {
-        if (location.hostname.endsWith("shazam.com")) {
+        var i;
+        if (location.hostname.indexOf("shazam.com") != -1) {
             if (location.pathname == "/" || location.pathname.length == 3) {
                 hideElementByClassName("getshazam");
                 hideElementByClassName("shazamoffers");
@@ -25,14 +26,12 @@
             } else {
                 if (shouldShowFacebookPage) {
                     var elements = document.getElementsByClassName("shz-frame-money");
-                    for (let i = 0; i < elements.length; i++) {
-                        const fbLikeContainer = elements[i];
+                    for (i = 0; i < elements.length; i++) {
+                        var fbLikeContainer = elements[i];
                         if (fbLikeContainer.className.indexOf('added-fb-like') < 0) {
                             fbLikeContainer.className += ' added-fb-like';
                             fbLikeContainer.style.textAlign = 'center';
-                            fbLikeContainer.innerHTML = `
-                            <iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fymusic.android%2F&tabs&width=340&height=214&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=1526211714125837" width="340" height="214" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
-                            `;
+                            fbLikeContainer.innerHTML = '<iframe src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fymusic.android%2F&tabs&width=340&height=214&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=1526211714125837" width="340" height="214" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>';
                         }
                     }
                 } else {
@@ -40,9 +39,9 @@
                 }
             }
             // hide player footer
-            const footers = document.getElementsByTagName('footer');
-            for (let i = 0; i < footers.length; i++) {
-                const footer = footers[i];
+            var footers = document.getElementsByTagName('footer');
+            for (i = 0; i < footers.length; i++) {
+                var footer = footers[i];
                 if (footer.className.indexOf('footerstatic') >= 0) {
                     footer.style.display = 'none';
                 }
@@ -54,30 +53,30 @@
     checkAndHideElement();
 
     console.log("script ===============");
-    var trackIdSet = new Set();
+    var trackIdSet = [];
     var trackInPage = [];
     var trackInPageInvalidate = true;
 
     function parseArtistCarousel(data) {
-        for (let index = 0; index < data.length; index++) {
-            const trackData = data[index].track;
+        for (var index = 0; index < data.length; index++) {
+            var trackData = data[index].track;
             if (trackData) parseTrack(trackData);
         }
     }
 
     function parseChart(data) {
-        for (let index = 0; index < data.chart.length; index++) {
-            const trackData = data.chart[index];
+        for (var index = 0; index < data.chart.length; index++) {
+            var trackData = data.chart[index];
             parseTrack(trackData);
         }
     }
 
     function parseShazamAccountData(data) {
-        let tags = data.tags;
+        var tags = data.tags;
         if (tags) {
-            for (let i = 0; i < tags.length; i++) {
-                const tag = tags[i];
-                let trackData = tag.track;
+            for (var i = 0; i < tags.length; i++) {
+                var tag = tags[i];
+                var trackData = tag.track;
                 if (trackData) parseTrack(trackData);
             }
         }
@@ -85,7 +84,7 @@
 
     function parseTrack(data) {
         if (data.type != "MUSIC") return;
-        let track = {
+        var track = {
             id: data.key,
             title: data.heading.title,
             subtitle: data.heading.subtitle,
@@ -94,8 +93,8 @@
         if (!track.thumbnail) {
             track.thumbnail = 'https://images.shazam.com/coverart/t' + track.id + '_s400.jpg';
         }
-        if (!trackIdSet.has(track.id)) {
-            trackIdSet.add(track.id);
+        if (trackIdSet.indexOf(track.id) < 0) {
+            trackIdSet.push(track.id);
             trackInPage.push(track);
             window.sessionStorage.setItem('track:' + track.id, JSON.stringify(track));
             if (!trackInPageInvalidate) {
@@ -107,20 +106,20 @@
 
     (function (send) {
         XMLHttpRequest.prototype.send = function (data) {
-            let originCallback = this.onreadystatechange;
+            var originCallback = this.onreadystatechange;
             this.onreadystatechange = function () {
                 if (originCallback) {
                     originCallback();
                 }
                 if (this.readyState == 4 && this.status == 200) {
-                    const regexAristTopTract = /\/artisttoptracks_\d+$/g;
-                    const regexTrackData = /\/track\/\d+$/g;
-                    const regexChart = /\/tracks\/\w+chart\w+$/g;
-                    const regexRecommendation = /\/tracks\/recommendations_\d+$/g;
-                    const regexArtistCarousel = /\/artistfollow\.json$/g;
-                    const regexShazamAccount = /\/tag\/([A-Z0-9a-z]+-?)+$/g;
+                    var regexAristTopTract = /\/artisttoptracks_\d+$/g;
+                    var regexTrackData = /\/track\/\d+$/g;
+                    var regexChart = /\/tracks\/\w+chart\w+$/g;
+                    var regexRecommendation = /\/tracks\/recommendations_\d+$/g;
+                    var regexArtistCarousel = /\/artistfollow\.json$/g;
+                    var regexShazamAccount = /\/tag\/([A-Z0-9a-z]+-?)+$/g;
 
-                    let uri = parseUri(this.responseURL);
+                    var uri = parseUri(this.responseURL);
                     if (regexAristTopTract.test(uri.pathname) ||
                         regexChart.test(uri.pathname) ||
                         regexRecommendation.test(uri.pathname)) {
@@ -139,16 +138,21 @@
         };
     })(XMLHttpRequest.prototype.send);
 
-    function onPlayShazam(trackId = undefined) {
-        let index = 0;
+    function onPlayShazam(trackId) {
+        var index = 0;
         if (trackId) {
-            index = trackInPage.findIndex(track => track.id == trackId);
+            for (; index < trackInPage.length; index++) {
+                if (trackInPage[index].id == trackId) break;
+            }
+            if (index >= trackInPage.length) {
+                index = -1;
+            }
         }
         if (index < 0) {
-            let trackInStorage = window.sessionStorage.getItem('track:' + trackId);
+            var trackInStorage = window.sessionStorage.getItem('track:' + trackId);
             if (trackInStorage) {
                 trackInPage.unshift(JSON.parse(trackInStorage));
-                trackIdSet.add(trackId);
+                trackIdSet.push(trackId);
                 index = 0;
             }
         }
@@ -156,10 +160,9 @@
         if (index < 0 || trackInPage.length === 0) {
             return;
         }
-        let eventPayload = {
-            position: index,
-            tracks: trackInPage
-        };
+        var eventPayload = {};
+        eventPayload.position = index;
+        eventPayload.tracks = trackInPage;
         console.log("doPlayShazam:" + JSON.stringify(eventPayload));
     }
 
@@ -196,8 +199,8 @@
     }
 
     function findYouTubeVideoId(data) {
-        let regex = /\/ux\/youtube\/([a-zA-Z0-9-_]{11})/g;
-        let m = regex.exec(data);
+        var regex = /\/ux\/youtube\/([a-zA-Z0-9-_]{11})/g;
+        var m = regex.exec(data);
         if (m) return m[1];
 
         regex = /(\?|&)v=([a-zA-Z0-9-_]{11})(&|$)/g;
@@ -210,10 +213,10 @@
     }
 
     function findElementByAttr(tag, attribute, attributeValue) {
-        const elements = document.getElementsByTagName(tag);
-        const result = [];
-        for (let i = 0; i < elements.length; i++) {
-            const element = elements[i];
+        var elements = document.getElementsByTagName(tag);
+        var result = [];
+        for (var i = 0; i < elements.length; i++) {
+            var element = elements[i];
             if (element.getAttribute(attribute) == attributeValue) {
                 result.push(element);
             }
@@ -222,10 +225,10 @@
     }
 
     function overrideAudioPlay() {
-        const audioPlayElements = document.getElementsByClassName("audio-play");
-        for (let i = 0; i < audioPlayElements.length; i++) {
-            let audioPlayElement = audioPlayElements[i];
-            let trackId = audioPlayElement.getAttribute('data-track-id');
+        var audioPlayElements = document.getElementsByClassName("audio-play");
+        for (var i = 0; i < audioPlayElements.length; i++) {
+            var audioPlayElement = audioPlayElements[i];
+            var trackId = audioPlayElement.getAttribute('data-track-id');
             if (!trackId) {
                 // try find in parent node
                 trackId = audioPlayElement.parentNode.getAttribute('data-track-id');
@@ -239,9 +242,9 @@
             }
         }
 
-        let playElements = findElementByAttr("a", "data-shz-cmd", "play");
-        for (let i = 0; i < playElements.length; i++) {
-            const playElement = playElements[i];
+        var playElements = findElementByAttr("a", "data-shz-cmd", "play");
+        for (i = 0; i < playElements.length; i++) {
+            var playElement = playElements[i];
             playElement.attributes.removeNamedItem("data-shz-cmd");
             if (playElement.tagName.toUpperCase() == "A") {
                 playElement.href = "#play_shazam_0";
@@ -251,14 +254,14 @@
             }
         }
 
-        const popupElements = document.getElementsByClassName("popup-btn");
-        for (let i = 0; i < popupElements.length; i++) {
-            const popupElement = popupElements[i];
+        var popupElements = document.getElementsByClassName("popup-btn");
+        for (i = 0; i < popupElements.length; i++) {
+            var popupElement = popupElements[i];
             if (!popupElement.hasAttribute("data-href")) {
                 continue;
             }
-            const dataHref = popupElement.getAttribute("data-href");
-            const videoId = findYouTubeVideoId(dataHref);
+            var dataHref = popupElement.getAttribute("data-href");
+            var videoId = findYouTubeVideoId(dataHref);
             if (!videoId) continue;
 
             replaceClass(popupElement, "popup-btn", '');
@@ -272,7 +275,7 @@
             }
         }
 
-        trackInPageInvalidate &= audioPlayElements.length === 0;
+        trackInPageInvalidate = trackInPageInvalidate && audioPlayElements.length === 0;
         setTimeout(overrideAudioPlay, trackInPageInvalidate ? 50 : 500);
     }
 
@@ -281,17 +284,17 @@
     (function (history) {
         var pushState = history.pushState;
         history.pushState = function (state, title, url) {
-            let uri = parseUri(url);
-            if (uri.hash.startsWith('#play_shazam_')) {
-                let trackId = uri.hash.substring(13);
+            var uri = parseUri(url);
+            if (uri.hash.indexOf('#play_shazam_') == 0) {
+                var trackId = uri.hash.substring(13);
                 if (trackId == "0") {
                     trackId = null;
                 }
                 console.log("#play_shazam - track ID: " + trackId);
                 onPlayShazam(trackId);
                 return;
-            } else if (uri.hash.startsWith('#play_youtube_')) {
-                let videoId = uri.hash.substring(14);
+            } else if (uri.hash.indexOf('#play_youtube_') == 0) {
+                var videoId = uri.hash.substring(14);
                 console.log("#play_youtube - video ID: " + videoId);
                 onPlayYoutubeVideo(videoId);
                 return;
